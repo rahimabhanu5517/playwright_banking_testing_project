@@ -1,0 +1,23 @@
+{
+  "baseURL": "https://parabank.parasoft.com/",
+  "expectedTitle": "ParaBank",
+  "defaultUser": {
+    "firstName": "rahima",
+    "lastName": "bhanu",
+    "address": "123 Main St",
+    "city": "Anytown",
+    "state": "CA",
+    "zipCode": "12345",
+    "phone": "1234567890",
+    "ssn": "123-45-6789",
+    "usernamePrefix": "user_",
+    "password": "password123"
+  },
+  "registrationSuccessMessage": "Your account was created successfully. You are now logged in.",
+  "accountsOverviewText": "Accounts Overview",
+  "openNewAccountText": "Open New Account",
+  "openAccountSuccessTitle": "Account Opened!",
+  "transferFundsText": "Transfer Funds",
+  "transferSuccessText": "Transfer Complete!",
+      "transferAmount": "1"
+    }
