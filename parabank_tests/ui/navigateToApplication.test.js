@@ -19,7 +19,7 @@ describe("Parabank Application Testing", () => {
     expect(title).toContain(config.expectedTitle);
   });
 
-  test.only("Register a new user", async ({ page }) => {
+  test("Register a new user", async ({ page }) => {
     const registrationPage = new RegistrationPage(page);
     await page.goto(config.baseURL);
     await registrationPage.navigateToRegisterPage();
@@ -42,7 +42,7 @@ describe("Parabank Application Testing", () => {
     expect(successMessage).toBe(config.registrationSuccessMessage);
   });
 
-  test.only("Login to the application with the created user", async ({ page }) => {
+  test("Login to the application with the created user", async ({ page }) => {
     const loginPage = new LoginPage(page);
     await page.goto(config.baseURL);
     const username = registeredUser.username;
@@ -63,7 +63,7 @@ describe("Parabank Application Testing", () => {
     await homePage.clickAndVerifyLinks();
   });
 
-  test.only("Create a savings account", async ({ page }) => {
+  test("Create a savings account", async ({ page }) => {
     const loginPage = new LoginPage(page);
     const accountPage = new AccountPage(page);
     await page.goto(config.baseURL);
@@ -139,7 +139,7 @@ describe("Parabank Application Testing", () => {
     console.log("Transfer completed successfully.");
   });
 
-  test.only("Transfer funds using Bill Pay", async ({ page }) => {
+  test("Transfer funds using Bill Pay", async ({ page }) => {
     const loginPage = new LoginPage(page);
     const billPayPage = new BillPayPage(page);
     await page.goto(config.baseURL);
@@ -174,7 +174,7 @@ describe("Parabank Application Testing", () => {
     console.log("Bill payment completed successfully.");
   });
 
-  test.only("Find transactions by amount", async ({ page }) => {
+  test("Find transactions by amount", async ({ page }) => {
     const loginPage = new LoginPage(page);
     const findTransactionsPage = new FindTransactionsPage(page);
     await page.goto(config.baseURL);
