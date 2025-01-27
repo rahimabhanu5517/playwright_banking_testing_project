@@ -19,5 +19,22 @@
   "openAccountSuccessTitle": "Account Opened!",
   "transferFundsText": "Transfer Funds",
   "transferSuccessText": "Transfer Complete!",
-      "transferAmount": "1"
-    }
+  "transferAmount": "1",
+  "billPay": {
+    "formTitle": "Bill Payment Service",
+    "successTitle": "Bill Payment Complete",
+    "payeeName": "Bhanu",
+    "address": "123 Elm Street",
+    "city": "Springfield",
+    "state": "IL",
+    "zipCode": "62701",
+    "phoneNumber": "5551234567",
+    "accountNumber": "123456789",
+    "verifyAccount": "123456789",
+    "amount": "10.00"
+  },
+  "findTransactions": {
+    "formTitle": "Find Transactions",
+    "successTitle": "Transaction Search Results"
+  }
+}

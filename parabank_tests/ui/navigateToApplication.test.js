@@ -4,9 +4,13 @@ const LoginPage = require("../../pages/loginPage");
 const HomePage = require("../../pages/homePage");
 const AccountPage = require("../../pages/accountPage");
 const TransferFundsPage = require("../../pages/transferFundsPage");
+const BillPayPage = require("../../pages/billPaymentPage");
+const FindTransactionsPage = require("../../pages/FindTransactionsPage");
 const config = require("../../config.json");
+
 let registeredUser;
 let newAccountNumber;
+let billpaidamount;
 
 test("Navigate to Para Bank application", async ({ page }) => {
   await page.goto(config.baseURL);
@@ -76,9 +80,7 @@ test.only("Create a savings account", async ({ page }) => {
     .annotations.push({ type: "accountNumber", description: newAccountNumber });
 });
 module.exports = { newAccountNumber };
-test.only("Validate account and balance in Accounts Overview", async ({
-  page,
-}) => {
+test("Validate account and balance in Accounts Overview", async ({ page }) => {
   const loginPage = new LoginPage(page);
   const accountPage = new AccountPage(page);
   await page.goto(config.baseURL);
@@ -97,7 +99,7 @@ test.only("Validate account and balance in Accounts Overview", async ({
     `Account number ${newAccountNumber} found with balance: ${matchingAccount.balance}`
   );
 });
-test.only("Transfer funds from newly created account", async ({ page }) => {
+test("Transfer funds from newly created account", async ({ page }) => {
   const loginPage = new LoginPage(page);
   const transferFundsPage = new TransferFundsPage(page);
   await page.goto(config.baseURL);
@@ -130,4 +132,69 @@ test.only("Transfer funds from newly created account", async ({ page }) => {
   console.log("Success Page Title:", successTitle.trim());
   expect(successTitle.trim()).toBe(config.transferSuccessText);
   console.log("Transfer completed successfully.");
+});
+
+test.only("Transfer funds using Bill Pay", async ({ page }) => {
+  const loginPage = new LoginPage(page);
+  const billPayPage = new BillPayPage(page);
+  await page.goto(config.baseURL);
+  await loginPage.login(registeredUser.username, registeredUser.password);
+  await billPayPage.navigateToBillPay();
+  const pageTitle = await page.textContent(billPayPage.pageTitle);
+  console.log("Page Title:", pageTitle.trim());
+  expect(pageTitle.trim()).toBe(config.billPay.formTitle);
+  const fromAccountValues = await billPayPage.getDropdownValues(
+    billPayPage.fromAccountDropdown
+  );
+  console.log("From Account Dropdown Values:", fromAccountValues);
+  let fromAccountToSelect;
+  for (const account of fromAccountValues) {
+    if (account.trim() === newAccountNumber) {
+      fromAccountToSelect = account;
+      break;
+    }
+  }
+  if (!fromAccountToSelect) {
+    throw new Error("No matching 'From Account' found for the transfer.");
+  }
+  console.log(`Selected From Account: ${fromAccountToSelect}`);
+  await page.selectOption(billPayPage.fromAccountDropdown, fromAccountToSelect);
+  await billPayPage.fillBillPayForm(config.billPay);
+  billpaidamount = config.billPay.amount;
+  console.log(`Bill Payment Amount: ${billpaidamount}`);
+  await billPayPage.clickSendPayment();
+  const successTitle = await page.textContent(billPayPage.successPageTitle);
+  console.log("Success Page Title:", successTitle.trim());
+  expect(successTitle.trim()).toBe(config.billPay.successTitle);
+  console.log("Bill payment completed successfully.");
+});
+
+test.only("Find transactions by amount", async ({ page }) => {
+  const loginPage = new LoginPage(page);
+  const findTransactionsPage = new FindTransactionsPage(page);
+  await page.goto(config.baseURL);
+  await loginPage.login(registeredUser.username, registeredUser.password);
+  console.log("Navigating to 'Find Transactions'...");
+  await findTransactionsPage.navigateToFindTransactions();
+  console.log("Asserting page title...");
+  const actualTitle = await findTransactionsPage.getPageTitle();
+  expect(actualTitle).toBe(config.findTransactions.formTitle);
+  const accountDropdownValues = await findTransactionsPage.getDropdownValues(
+    findTransactionsPage.accountDropdown
+  );
+  console.log("Account Dropdown Values:", accountDropdownValues);
+  expect(accountDropdownValues).toContain(newAccountNumber);
+  await page.selectOption(
+    findTransactionsPage.accountDropdown,
+    newAccountNumber
+  );
+  console.log(`Searching transactions for amount: ${billpaidamount}`);
+  await findTransactionsPage.findByAmount(billpaidamount);
+  await page.waitForTimeout(2000);
+  console.log("Attempting to extract debit column values...");
+  const debitValues = await findTransactionsPage.getTransactionTableValues(
+    findTransactionsPage.debitColumn
+  );
+  console.log("Debit Column Values Extracted:", debitValues);
+  expect(debitValues).toContain(billpaidamount);
 });
